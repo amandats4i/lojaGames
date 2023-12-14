@@ -89,7 +89,9 @@ public class Produtos {
 	public void setFoto(String foto) {
 		this.foto = foto;
 	}
+
+	
+	}
 	
 	
 	
-}

@@ -60,21 +60,29 @@ public class ProdutosController {
 
 	@GetMapping("/precos/{preco}")
 	public ResponseEntity<List<Produtos>> getByPreco(@PathVariable BigDecimal preco) {
+		
 		return ResponseEntity.ok(produtosRepository.findAllByPrecoGreaterThan(preco));
 
 	}
 
 	@PostMapping
-	public ResponseEntity<Produtos> post(@Valid @RequestBody Produtos produtos) {
+	public ResponseEntity<Produtos> post (@Valid @RequestBody Produtos produtos) {
+		if(produtosRepository.existsById(produtos.getCategorias().getId()))
 		return ResponseEntity.status(HttpStatus.CREATED).body(produtosRepository.save(produtos));
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Produto não existe!", null);
 
 	}
 
 	@PutMapping
 	public ResponseEntity<Produtos> put(@Valid @RequestBody Produtos produtos) {
-		return produtosRepository.findById(produtos.getId())
-				.map(resposta -> ResponseEntity.status(HttpStatus.OK).body(produtosRepository.save(produtos)))
-				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+		if (produtosRepository.existsById(produtos.getId())) {
+
+			if (produtosRepository.existsById(produtos.getCategorias().getId()))
+				return ResponseEntity.status(HttpStatus.OK).body(produtosRepository.save(produtos));
+
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Categoria não existe!", null);
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
