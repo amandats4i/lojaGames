@@ -1,5 +1,7 @@
 package com.generation.lojagames.controller;
 
+import java.math.BigDecimal;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -24,60 +26,67 @@ import com.generation.lojagames.repository.ProdutosRepository;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping ("/produtos")
-@CrossOrigin (origins = "*", allowedHeaders = "*")
+@RequestMapping("/produtos")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 
 public class ProdutosController {
-	
+
 	@Autowired
 	private ProdutosRepository produtosRepository;
-	
+
 	@GetMapping
-	public ResponseEntity <List <Produtos>> getAll () {
+	public ResponseEntity<List<Produtos>> getAll() {
 		return ResponseEntity.ok(produtosRepository.findAll());
-		
+
 	}
-	
-	@GetMapping ("/{id}")
-	public ResponseEntity<Produtos> getById (@PathVariable Long id){
-		return produtosRepository.findById(id)
-				.map(resposta -> ResponseEntity.ok(resposta)) 
+
+	@GetMapping("/{id}")
+	public ResponseEntity<Produtos> getById(@PathVariable Long id) {
+		return produtosRepository.findById(id).map(resposta -> ResponseEntity.ok(resposta))
 				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-		}
-	
+	}
+
 	@GetMapping("/nome/{nome}")
 	public ResponseEntity<List<Produtos>> getByNome(@PathVariable String nome) {
 		return ResponseEntity.ok(produtosRepository.findAllByNomeContainingIgnoreCase(nome));
-		
+
 	}
-	
+
+	@GetMapping("/preco/{preco}")
+	public ResponseEntity<List<Produtos>> getByProdutos(@PathVariable BigDecimal preco) {
+		return ResponseEntity.ok(produtosRepository.findAllByPrecoLessThan(preco));
+
+	}
+
+	@GetMapping("/precos/{preco}")
+	public ResponseEntity<List<Produtos>> getByPreco(@PathVariable BigDecimal preco) {
+		return ResponseEntity.ok(produtosRepository.findAllByPrecoGreaterThan(preco));
+
+	}
+
 	@PostMapping
 	public ResponseEntity<Produtos> post(@Valid @RequestBody Produtos produtos) {
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(produtosRepository.save(produtos));
-		
+		return ResponseEntity.status(HttpStatus.CREATED).body(produtosRepository.save(produtos));
+
 	}
-	
+
 	@PutMapping
 	public ResponseEntity<Produtos> put(@Valid @RequestBody Produtos produtos) {
 		return produtosRepository.findById(produtos.getId())
-				.map(resposta -> ResponseEntity.status(HttpStatus.OK)
-						.body(produtosRepository.save(produtos)))
+				.map(resposta -> ResponseEntity.status(HttpStatus.OK).body(produtosRepository.save(produtos)))
 				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
-	
+
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
-		
-		Optional<Produtos> produto = produtosRepository.findById(id);
-		
-		if(produto.isEmpty())
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		
-		produtosRepository.deleteById(id);				
-	}
-		
-}
-	
 
+		Optional<Produtos> produto = produtosRepository.findById(id);
+
+		if (produto.isEmpty())
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+		produtosRepository.deleteById(id);
+	}
+
+}
