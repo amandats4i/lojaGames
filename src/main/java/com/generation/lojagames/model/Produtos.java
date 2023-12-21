@@ -1,7 +1,6 @@
 package com.generation.lojagames.model;
 
 import java.math.BigDecimal;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
@@ -35,11 +34,23 @@ public class Produtos {
 	private BigDecimal preco;
 	
 	private String foto;
-	
+
 	@ManyToOne
 	@JsonIgnoreProperties("produtos")
 	private Categorias categorias;
 	
+	@ManyToOne
+	@JsonIgnoreProperties("produtos")
+	private Usuario usuario;
+	
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
 
 	public Categorias getCategorias() {
 		return categorias;
